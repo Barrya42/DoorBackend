@@ -8,13 +8,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 //Сущьность пользователя, который будет непосредственно работать с программой(сотрудник УК или мы).
 @Entity
+@Table(name="Users")
 public class UserEntity
 {
     @Id
-    //@GeneratedValue
+    @GeneratedValue
     private long id;
 
     private String name;
