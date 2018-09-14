@@ -1,4 +1,4 @@
-package Entitys;
+package root.Entitys;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class RoleEntity
 {
     @Id
-    @GeneratedValue
+    //@GeneratedValue
     private long id;
     private String name;
 

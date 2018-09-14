@@ -1,4 +1,4 @@
-package Entitys;
+package root.Entitys;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 public class UserEntity
 {
     @Id
-    @GeneratedValue
+    //@GeneratedValue
     private long id;
 
     private String name;

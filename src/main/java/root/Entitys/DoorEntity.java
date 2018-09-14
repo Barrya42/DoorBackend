@@ -1,7 +1,8 @@
-package Entitys;
+package root.Entitys;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 //Сущньсть непосредственно двери/шлакбаума/калитки
@@ -9,7 +10,7 @@ import javax.persistence.Id;
 public class DoorEntity
 {
     @Id
-    @GeneratedValue
+    //@GeneratedValue
     private long id;
     private String adress;
     private String mac;
