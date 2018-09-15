@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 import root.Services.ServicesImpl.DoorServiceImpl;
+import root.Services.ServicesImpl.GuestServiceImpl;
 
 @EnableAutoConfiguration
 @Configuration
@@ -26,12 +27,12 @@ public class Main
     }
 
     @Bean
-    CommandLineRunner init(DoorServiceImpl doorService
+    CommandLineRunner init(GuestServiceImpl guestService
     )
     {
         return (evt) ->
         {
-            System.out.print(doorService.Count());
+            System.out.print(guestService.findOneByPhone("+79130744802"));
         };
     }
 }

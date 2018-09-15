@@ -2,6 +2,9 @@ package root.Entitys;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -12,14 +15,16 @@ import javax.persistence.Table;
 
 //Сущьность пользователя, который будет непосредственно работать с программой(сотрудник УК или мы).
 @Entity
-@Table(name="Users")
+@Table(name = "Users")
 public class UserEntity
 {
+    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     @Id
     @GeneratedValue
     private long id;
 
     private String name;
+    private String username;
     private String phone;
     @JsonIgnore
     private String password;
@@ -50,6 +55,11 @@ public class UserEntity
     public String getPassword()
     {
         return password;
+    }
+
+    public String getUsername()
+    {
+        return username;
     }
 
     UserEntity()
