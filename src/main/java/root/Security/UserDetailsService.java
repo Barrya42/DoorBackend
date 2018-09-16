@@ -2,10 +2,15 @@ package root.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
+import root.Entitys.RoleEntity;
 import root.Entitys.UserEntity;
 import root.Repositories.UserEntityRepository;
 
@@ -21,7 +26,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
         UserEntity user;
-        // TODO: 15.09.2018 запислить нормальную регулярку для номера телефна
+        // TODO: 15.09.2018 запилить нормальную регулярку для номера телефна
         if (username.startsWith("+79") || username.startsWith("79") || username.startsWith("89"))
         {
             user = users.findOneByphone(username)
@@ -35,12 +40,17 @@ public class UserDetailsService implements org.springframework.security.core.use
 //            if (user == null){
 //                throw new UsernameNotFoundException(username + " was not found");
 //            }
-        return new org.springframework.security.core.userdetails.User(
+
+
+        return new User(
                 user.getUsername(),
                 user.getPassword(),
-                AuthorityUtils.createAuthorityList((String[]) user.getRoles()
-                        .toArray())
-        );
+                user.getEnabled(),
+                true,
+                true,
+                true,
+                AuthorityUtils.createAuthorityList(user.getRolesArray()
+                ));
     }
 
 }
