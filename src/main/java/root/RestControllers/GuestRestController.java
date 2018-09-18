@@ -28,6 +28,8 @@ public class GuestRestController
     @RequestMapping(path = "/{phone}", method = RequestMethod.GET)
     private GuestEntity readGuest(@PathVariable String phone)
     {
+        System.out.println("readGuest");
+        phone = PhoneTools.preparePhone(phone);
         validateGuest(phone);
         return guestService.findOneByPhone(phone)
                 .get();
