@@ -20,7 +20,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 public class GuestEntity
 {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.TABLE)
     private long id;
     private boolean enabled;
     private String name;
