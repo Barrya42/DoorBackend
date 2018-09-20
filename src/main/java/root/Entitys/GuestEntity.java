@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import root.Tools.PhoneTools;
+
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
@@ -20,7 +22,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 public class GuestEntity
 {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private boolean enabled;
     private String name;
@@ -75,4 +77,15 @@ public class GuestEntity
                 (enabled ? "Активен" : "Не активен");
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        GuestEntity other = (GuestEntity) obj;
+        if (PhoneTools.preparePhone(phone)
+                .equals(PhoneTools.preparePhone(other.phone)))
+        {
+            return true;
+        }
+        return super.equals(obj);
+    }
 }

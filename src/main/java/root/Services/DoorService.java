@@ -1,6 +1,10 @@
 package root.Services;
 
+import java.util.Optional;
+
+import root.Entitys.DoorEntity;
+
 public interface DoorService
 {
-    public long Count();
+    Optional<DoorEntity> findOneByPhone(String phone);
 }

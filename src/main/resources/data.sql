@@ -10,3 +10,8 @@ insert into users_roles values (1,2)
 
 insert  into guests values(1,true,'Степан','79130744802')
 insert  into guests values(2,true,'Степан2','79130744803')
+insert  into guests values(3,true,'Иван','79963326612')
+
+insert  into doors values(1,'any adress',125.44,false ,'mac adress','79236181237')
+
+insert into guests_accessed_doors values (1,1)

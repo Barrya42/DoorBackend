@@ -6,9 +6,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import root.Tools.PhoneTools;
+
 //Сущньсть непосредственно двери/шлакбаума/калитки
 @Entity
-@Table(name="Doors")
+@Table(name = "Doors")
 public class DoorEntity
 {
     @Id
@@ -55,4 +57,15 @@ public class DoorEntity
 
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        DoorEntity other = (DoorEntity) obj;
+        if (PhoneTools.preparePhone(phone)
+                .equals(PhoneTools.preparePhone(other.phone)))
+        {
+            return true;
+        }
+        return super.equals(obj);
+    }
 }

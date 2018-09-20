@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
+import root.Entitys.DoorEntity;
 import root.Repositories.DoorEntityRepository;
 import root.Services.DoorService;
 
@@ -14,9 +17,10 @@ public class DoorServiceImpl implements DoorService
     @Autowired
     DoorEntityRepository doorEntityRepository;
 
+
     @Override
-    public long Count()
+    public Optional<DoorEntity> findOneByPhone(String phone)
     {
-        return doorEntityRepository.count();
+        return doorEntityRepository.findOneByphone(phone);
     }
 }
