@@ -3,16 +3,14 @@ package root.Entitys;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "Guests", uniqueConstraints =
@@ -20,7 +18,8 @@ import static javax.persistence.GenerationType.SEQUENCE;
 public class GuestEntity
 {
     @Id
-    @GeneratedValue(strategy= GenerationType.TABLE)
+    @SequenceGenerator(name = "hibernateSeq", sequenceName = "HIBERNATE_SEQUENCE")
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "hibernateSeq")
     private long id;
     private boolean enabled;
     private String name;
