@@ -3,14 +3,18 @@ package root.Entitys;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import root.Tools.PhoneTools;
+
+import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "Guests", uniqueConstraints =
@@ -18,8 +22,7 @@ import javax.persistence.UniqueConstraint;
 public class GuestEntity
 {
     @Id
-    @SequenceGenerator(name = "hibernateSeq", sequenceName = "HIBERNATE_SEQUENCE")
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "hibernateSeq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private boolean enabled;
     private String name;
@@ -74,4 +77,15 @@ public class GuestEntity
                 (enabled ? "Активен" : "Не активен");
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        GuestEntity other = (GuestEntity) obj;
+        if (PhoneTools.preparePhone(phone)
+                .equals(PhoneTools.preparePhone(other.phone)))
+        {
+            return true;
+        }
+        return super.equals(obj);
+    }
 }

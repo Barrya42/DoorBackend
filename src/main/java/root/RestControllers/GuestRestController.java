@@ -13,33 +13,88 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.executable.ValidateOnExecution;
+
+import root.Entitys.DoorEntity;
 import root.Entitys.GuestEntity;
+import root.Services.DoorService;
 import root.Services.GuestService;
 import root.Tools.PhoneTools;
 
 @RestController
+//@RolesAllowed({"user", "admin"})
 @RequestMapping("/guests")
 public class GuestRestController
 {
     @Autowired
     private GuestService guestService;
+    @Autowired
+    private DoorService doorService;
 
-    @RequestMapping(path = "/{phone}", method = RequestMethod.GET)
-    private GuestEntity readGuest(@PathVariable String phone)
+    @RequestMapping(path = "/getInfo", method = RequestMethod.GET)
+    private GuestEntity readGuest(@RequestParam Map<String, String> param)
     {
-        System.out.println("readGuest");
+        String phone = param.get("guestPhone");
         phone = PhoneTools.preparePhone(phone);
         validateGuest(phone);
         return guestService.findOneByPhone(phone)
                 .get();
     }
 
-    @RequestMapping(path = "/add", method = RequestMethod.PUT)
+    @RequestMapping(path = "/allowDoor", method = RequestMethod.POST)
+    private ResponseEntity allowDoor(@RequestParam Map<String, String> params)
+    {
+        ResponseEntity responseEntity;
+        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
+        String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
+        DoorEntity checkingDoor = doorService.findOneByPhone(doorPhone)
+                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
+        GuestEntity guestEntity = guestService.findOneByPhone(guestPhone)
+                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
+        Set<DoorEntity> allowedDoors = guestEntity.getAccessedDoors();
+        if (allowedDoors.contains(checkingDoor))
+        {
+            throw new GuestAlreadyHaveThisDoorException(guestPhone, doorPhone);
+        }
+        else
+        {
+
+            // TODO: 21.09.2018 Доделать!!!
+            responseEntity = new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+        return responseEntity;
+    }
+
+    @RequestMapping(path = "/checkDoor", method = RequestMethod.GET)
+    private ResponseEntity checkDoor(@RequestParam Map<String, String> params)
+    {
+        ResponseEntity responseEntity;
+        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
+        String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
+        DoorEntity checkingDoor = doorService.findOneByPhone(doorPhone)
+                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
+        GuestEntity guestEntity = guestService.findOneByPhone(guestPhone)
+                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
+        Set<DoorEntity> allowedDoors = guestEntity.getAccessedDoors();
+        if (allowedDoors.contains(checkingDoor))
+        {
+            responseEntity = new ResponseEntity(HttpStatus.ACCEPTED);
+        }
+        else
+        {
+            responseEntity = new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+        return responseEntity;
+    }
+
+    @RequestMapping(path = "/add", method = RequestMethod.POST)
 
     private GuestEntity addGuest(@RequestParam Map<String, String> param)
     {
-        String phone = PhoneTools.preparePhone(param.get("phone"));
+        String phone = PhoneTools.preparePhone(param.get("guestPhone"));
         String name = param.get("name");
         Boolean enabled = Boolean.valueOf(param.get("enabled"));
         Optional<GuestEntity> guestEntity = guestService.findOneByPhone(phone);
@@ -74,6 +129,7 @@ class GuestNotFoundException extends RuntimeException
     }
 }
 
+
 @ResponseStatus(HttpStatus.CONFLICT)
 class GuestAlreadyExistException extends RuntimeException
 {
@@ -90,5 +146,14 @@ class CantBeCreatedException extends RuntimeException
     public CantBeCreatedException(String guestPhone)
     {
         super("Guest with '" + guestPhone + "' cant be created.");
+    }
+}
+
+@ResponseStatus(HttpStatus.CONFLICT)
+class GuestAlreadyHaveThisDoorException extends RuntimeException
+{
+    public GuestAlreadyHaveThisDoorException(String guestPhone, String doorPhone)
+    {
+        super("Guest '" + guestPhone + "' already have door '" + doorPhone + "'");
     }
 }
