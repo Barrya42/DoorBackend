@@ -14,7 +14,7 @@ import root.Tools.PhoneTools;
 public class DoorEntity
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String adress;
     private String mac;
