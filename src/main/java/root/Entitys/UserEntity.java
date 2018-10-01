@@ -16,7 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-//Сущьность пользователя, который будет непосредственно работать с программой(сотрудник УК или мы).
+//Сущьность пользователя, который будет непосредственно работать с программой(сотрудник УК или мы или дверь).
 @Entity
 //@Transactional
 @Table(name = "Users")

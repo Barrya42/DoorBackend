@@ -1,10 +1,8 @@
 package root.RestControllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.validation.Valid;
-import javax.validation.executable.ValidateOnExecution;
 
 import root.Entitys.DoorEntity;
 import root.Entitys.GuestEntity;
@@ -35,19 +30,19 @@ public class GuestRestController
     private DoorService doorService;
 
     @RequestMapping(path = "/getInfo", method = RequestMethod.GET)
-    private GuestEntity readGuest(@RequestParam Map<String, String> param)
+
+    private GuestEntity readGuest(@RequestParam Map<String, String> params)
     {
-        String phone = param.get("guestPhone");
-        phone = PhoneTools.preparePhone(phone);
-        validateGuest(phone);
+        String phone = PhoneTools.preparePhone(params.get("guestPhone"));
+
         return guestService.findOneByPhone(phone)
-                .get();
+                .orElseThrow(() -> new GuestNotFoundException(phone));
     }
 
     @RequestMapping(path = "/allowDoor", method = RequestMethod.POST)
-    private ResponseEntity allowDoor(@RequestParam Map<String, String> params)
+    private ResponseEntity<GuestEntity> allowDoor(@RequestParam Map<String, String> params)
     {
-        ResponseEntity responseEntity;
+        ResponseEntity<GuestEntity> responseEntity;
         String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
         String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
         DoorEntity checkingDoor = doorService.findOneByPhone(doorPhone)
@@ -61,14 +56,39 @@ public class GuestRestController
         }
         else
         {
-
+            guestEntity = guestService.allowDoor(guestEntity, checkingDoor);
             // TODO: 21.09.2018 Доделать!!!
-            responseEntity = new ResponseEntity(HttpStatus.FORBIDDEN);
+            responseEntity = new ResponseEntity<>(guestEntity, HttpStatus.ACCEPTED);
+        }
+        return responseEntity;
+    }
+
+    @RequestMapping(path = "/dennyDoor", method = RequestMethod.POST)
+    private ResponseEntity<GuestEntity> dennyDoor(@RequestParam Map<String, String> params)
+    {
+        ResponseEntity<GuestEntity> responseEntity;
+        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
+        String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
+        DoorEntity checkingDoor = doorService.findOneByPhone(doorPhone)
+                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
+        GuestEntity guestEntity = guestService.findOneByPhone(guestPhone)
+                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
+        Set<DoorEntity> allowedDoors = guestEntity.getAccessedDoors();
+        if (!allowedDoors.contains(checkingDoor))
+        {
+            throw new GuestDoesntHaveThisDoorException(guestPhone, doorPhone);
+        }
+        else
+        {
+            guestEntity = guestService.dennyDoor(guestEntity, checkingDoor);
+            // TODO: 21.09.2018 Доделать!!!
+            responseEntity = new ResponseEntity<>(guestEntity, HttpStatus.ACCEPTED);
         }
         return responseEntity;
     }
 
     @RequestMapping(path = "/checkDoor", method = RequestMethod.GET)
+
     private ResponseEntity checkDoor(@RequestParam Map<String, String> params)
     {
         ResponseEntity responseEntity;
@@ -110,13 +130,6 @@ public class GuestRestController
     }
 
 
-    private void validateGuest(String phone)
-    {
-        String _phone = PhoneTools.preparePhone(phone);
-        this.guestService.findOneByPhone(phone)
-                .orElseThrow(
-                        () -> new GuestNotFoundException(_phone));
-    }
 }
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -155,5 +168,14 @@ class GuestAlreadyHaveThisDoorException extends RuntimeException
     public GuestAlreadyHaveThisDoorException(String guestPhone, String doorPhone)
     {
         super("Guest '" + guestPhone + "' already have door '" + doorPhone + "'");
+    }
+}
+
+@ResponseStatus(HttpStatus.CONFLICT)
+class GuestDoesntHaveThisDoorException extends RuntimeException
+{
+    public GuestDoesntHaveThisDoorException(String guestPhone, String doorPhone)
+    {
+        super("Guest '" + guestPhone + "'doesn't have door '" + doorPhone + "'");
     }
 }

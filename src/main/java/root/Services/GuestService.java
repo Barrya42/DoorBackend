@@ -1,13 +1,21 @@
 package root.Services;
 
-import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.constraints.NotNull;
+
+import root.Entitys.DoorEntity;
 import root.Entitys.GuestEntity;
 
 public interface GuestService
 {
-    public Optional<GuestEntity> findOneByPhone(String phone);
-    public Optional<GuestEntity> addGuest(String name, String phone, Boolean enabled);
-    public Optional<GuestEntity> findByID(long id);
+    Optional<GuestEntity> findOneByPhone(String phone);
+
+    Optional<GuestEntity> addGuest(String name, String phone, Boolean enabled);
+
+    Optional<GuestEntity> findByID(long id);
+
+    GuestEntity allowDoor(GuestEntity guestEntity, DoorEntity doorEntity);
+
+    GuestEntity dennyDoor(GuestEntity guestEntity, DoorEntity checkingDoor);
 }
