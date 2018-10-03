@@ -1,20 +1,21 @@
 package root.RestControllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-import java.util.Set;
 
-import root.Entitys.DoorEntity;
+import javax.validation.Valid;
+
 import root.Entitys.GuestEntity;
 import root.Services.DoorService;
-import root.Services.Exceptions.Door.DoorNotFoundException;
 import root.Services.Exceptions.Guest.GuestNotFoundException;
 import root.Services.GuestService;
 import root.Tools.PhoneTools;
@@ -72,13 +73,8 @@ public class GuestRestController
         ResponseEntity responseEntity;
         String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
         String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
-        DoorEntity checkingDoor = doorService.findOneByPhone(doorPhone)
-                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
-        GuestEntity guestEntity = guestService.findOneByPhone(guestPhone)
-                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
-        Set<DoorEntity> allowedDoors = guestEntity.getAccessedDoors();
 
-        if (allowedDoors.contains(checkingDoor) && guestEntity.getEnabled())
+        if (guestService.checkDoorForGuest(guestPhone, doorPhone))
         {
             responseEntity = new ResponseEntity(HttpStatus.ACCEPTED);
         }
@@ -95,12 +91,11 @@ public class GuestRestController
         String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
         Boolean enabled = Boolean.valueOf(params.get(("enabled")));
 
-        return guestService.setEnableGuest(guestPhone,enabled);
+        return guestService.setEnableGuest(guestPhone, enabled);
 
     }
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
-
     private GuestEntity addGuest(@RequestParam Map<String, String> params)
     {
         String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
@@ -110,7 +105,13 @@ public class GuestRestController
         return guestService.addGuest(name, guestPhone, enabled);
     }
 
+    @RequestMapping(path = "/updateGuest", method = RequestMethod.POST)
 
+    private  GuestEntity updateGuest(@RequestBody GuestEntity guestEntity)
+    {
+//        return guestService.updateGuest(guestEntity);
+        return null;
+    }
 }
 
 

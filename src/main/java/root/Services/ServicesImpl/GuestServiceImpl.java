@@ -38,10 +38,11 @@ public class GuestServiceImpl implements GuestService
     @Override
     public GuestEntity addGuest(String name, String guestPhone, Boolean enabled)
     {
-        guestService.findOneByphone(guestPhone).ifPresent(guestEntity ->
-        {
-            throw new GuestAlreadyExistException(guestEntity.getPhone());
-        });
+        guestService.findOneByphone(guestPhone)
+                .ifPresent(guestEntity ->
+                {
+                    throw new GuestAlreadyExistException(guestEntity.getPhone());
+                });
         GuestEntity guestEntity = new GuestEntity(name, guestPhone, enabled);
         return guestService.save(guestEntity);
     }
@@ -93,8 +94,39 @@ public class GuestServiceImpl implements GuestService
     {
 //        GuestEntity foundedGuestEntity = guestService.findById(guestEntity.getId())
 //                .orElseThrow(() -> new GuestNotFoundException(guestEntity.getPhone()));
-        throw new RuntimeException("Not Implemeted");
-        //return null;
+//        throw new RuntimeException("Not Implemeted");
+
+        if (params.containsKey("id"))
+        {
+            long id = Long.valueOf(params.get("id"));
+            String guestPhone = params.getOrDefault("guestPhone", "");
+            String guestName = params.getOrDefault("guestName", "");
+            Boolean enabled = Boolean.valueOf(params.getOrDefault("enabled", "false"));
+
+
+            GuestEntity guestEntity = guestService.findById(id)
+                    .orElseThrow(() -> new GuestNotFoundException(guestPhone));
+            guestEntity.setEnabled(enabled);
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean checkDoorForGuest(String guestPhone, String doorPhone)
+    {
+        DoorEntity checkingDoor = doorEntityRepository.findOneByphone(doorPhone)
+                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
+        GuestEntity guestEntity = guestService.findOneByphone(guestPhone)
+                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
+        if (guestEntity.getAccessedDoors()
+                .contains(checkingDoor) && guestEntity.isEnabled())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 }

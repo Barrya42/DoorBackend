@@ -1,5 +1,7 @@
 package root.Entitys;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import jdk.nashorn.internal.objects.annotations.Getter;
 import root.Tools.PhoneTools;
 
 import static javax.persistence.GenerationType.SEQUENCE;
@@ -25,6 +28,17 @@ public class GuestEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private boolean enabled;
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setPhone(String phone)
+    {
+        this.phone = phone;
+    }
+
     private String name;
     private String phone;
     @OneToMany
@@ -35,7 +49,7 @@ public class GuestEntity
         return id;
     }
 
-    public boolean getEnabled()
+    public boolean isEnabled()
     {
         return enabled;
     }
@@ -59,6 +73,7 @@ public class GuestEntity
     {
         return accessedDoors;
     }
+
 
     public GuestEntity(String name, String phone, Boolean enabled)
     {

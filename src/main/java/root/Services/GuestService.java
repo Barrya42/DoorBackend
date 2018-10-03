@@ -18,4 +18,6 @@ public interface GuestService
     GuestEntity dennyDoor(String guestPhone, String doorPhone);
 
     GuestEntity updateGuest(Map<String,String> params);
+
+    Boolean checkDoorForGuest(String guestPhone, String doorPhone);
 }
