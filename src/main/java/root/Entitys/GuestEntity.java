@@ -35,9 +35,14 @@ public class GuestEntity
         return id;
     }
 
-    public boolean isEnabled()
+    public boolean getEnabled()
     {
         return enabled;
+    }
+
+    public void setEnabled(Boolean newEnabled)
+    {
+        enabled = newEnabled;
     }
 
     public String getName()
@@ -62,6 +67,7 @@ public class GuestEntity
         this.phone = phone;
         this.accessedDoors = new HashSet<>();
     }
+
 
     public GuestEntity()
     {

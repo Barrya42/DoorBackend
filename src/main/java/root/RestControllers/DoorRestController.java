@@ -11,12 +11,3 @@ public class DoorRestController
 {
 }
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class DoorNotFoundException extends RuntimeException
-{
-
-    public DoorNotFoundException(String guestPhone)
-    {
-        super("could not find door '" + guestPhone + "'.");
-    }
-}
