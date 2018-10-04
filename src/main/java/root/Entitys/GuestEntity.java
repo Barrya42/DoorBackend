@@ -1,11 +1,8 @@
 package root.Entitys;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,10 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
 import root.Tools.PhoneTools;
-
-import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "Guests", uniqueConstraints =
@@ -40,6 +34,22 @@ public class GuestEntity
     }
 
     private String name;
+
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    public void setAccessedDoors(Set<DoorEntity> accessedDoors)
+    {
+        this.accessedDoors = accessedDoors;
+    }
+
     private String phone;
     @OneToMany
     private Set<DoorEntity> accessedDoors;
