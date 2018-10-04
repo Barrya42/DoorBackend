@@ -40,32 +40,6 @@ public class GuestRestController
                 .orElseThrow(() -> new GuestNotFoundException(phone));
     }
 
-    @RequestMapping(path = "/allowDoor", method = RequestMethod.POST)
-    private GuestEntity allowDoor(@RequestParam Map<String, String> params)
-    {
-        //ResponseEntity<GuestEntity> responseEntity;
-        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
-        String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
-        GuestEntity guestEntity = guestService.allowDoor(guestPhone, doorPhone);
-
-        //responseEntity = new ResponseEntity<>(guestEntity, HttpStatus.ACCEPTED);
-
-        return guestEntity;
-    }
-
-    @RequestMapping(path = "/dennyDoor", method = RequestMethod.POST)
-    private GuestEntity dennyDoor(@RequestParam Map<String, String> params)
-    {
-        //ResponseEntity<GuestEntity> responseEntity;
-        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
-        String doorPhone = PhoneTools.preparePhone(params.get("doorPhone"));
-        GuestEntity guestEntity = guestService.dennyDoor(guestPhone, doorPhone);
-
-        //responseEntity = new ResponseEntity<>(guestEntity, HttpStatus.ACCEPTED);
-
-        return guestEntity;
-    }
-
     @RequestMapping(path = "/checkDoor", method = RequestMethod.GET)
 
     private ResponseEntity checkDoor(@RequestParam Map<String, String> params)
@@ -85,30 +59,20 @@ public class GuestRestController
         return responseEntity;
     }
 
-    @RequestMapping(path = "/setEnableGuest", method = RequestMethod.POST)
-    private GuestEntity setEnableGuest(@RequestParam Map<String, String> params)
-    {
-        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
-        Boolean enabled = Boolean.valueOf(params.get(("enabled")));
-
-        return guestService.setEnableGuest(guestPhone, enabled);
-
-    }
-
     @RequestMapping(path = "/add", method = RequestMethod.POST)
-    private GuestEntity addGuest(@RequestParam Map<String, String> params)
+    private GuestEntity addGuest(@RequestBody GuestEntity newGuestEntity)
     {
-        String guestPhone = PhoneTools.preparePhone(params.get("guestPhone"));
-        String name = params.get("name");
-        Boolean enabled = Boolean.valueOf(params.get("enabled"));
-
-        return guestService.addGuest(name, guestPhone, enabled);
+        String guestPhone = PhoneTools.preparePhone(newGuestEntity.getPhone());
+        newGuestEntity.setPhone(guestPhone);
+        guestService.addGuest(newGuestEntity);
+        return guestService.addGuest(newGuestEntity);
     }
 
     @RequestMapping(path = "/updateGuest", method = RequestMethod.POST)
 
-    private  GuestEntity updateGuest(@RequestBody GuestEntity guestEntity)
+    private GuestEntity updateGuest(@RequestBody GuestEntity guestEntity)
     {
+        guestEntity.setPhone(PhoneTools.preparePhone(guestEntity.getPhone()));
         return guestService.updateGuest(guestEntity);
     }
 }

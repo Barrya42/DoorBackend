@@ -15,5 +15,6 @@ insert  into guests(enabled,name,phone) values(true,'Степан2','79130744803
 insert  into guests(enabled,name,phone) values(true,'Иван','79963326612')
 
 insert  into doors(adress,balance,is_open,mac,phone) values('any adress',125.44,false ,'mac adress','79236181237')
+insert  into doors(adress,balance,is_open,mac,phone) values('any adress234',125.44,false ,'mac adress234','79236181238')
 
 insert into guests_accessed_doors values (1,1)

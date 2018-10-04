@@ -1,12 +1,19 @@
 package root.Services.ServicesImpl;
 
+import com.sun.xml.internal.bind.v2.TODO;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 import root.Entitys.DoorEntity;
 import root.Entitys.GuestEntity;
@@ -17,6 +24,7 @@ import root.Services.Exceptions.Guest.GuestAlreadyExistException;
 import root.Services.Exceptions.Guest.GuestAlreadyHaveThisDoorException;
 import root.Services.Exceptions.Guest.GuestNotFoundException;
 import root.Services.GuestService;
+import root.Tools.PhoneTools;
 
 @Service
 @ComponentScan("root/Repositories")
@@ -24,6 +32,10 @@ public class GuestServiceImpl implements GuestService
 {
     @Autowired
     GuestEntityRepository guestService;
+
+    @Autowired
+    @Qualifier("guestEntityManager")
+    EntityManager entityManager;
 
     @Autowired
     DoorEntityRepository doorEntityRepository;
@@ -36,75 +48,44 @@ public class GuestServiceImpl implements GuestService
     }
 
     @Override
-    public GuestEntity addGuest(String name, String guestPhone, Boolean enabled)
+    public GuestEntity addGuest(GuestEntity sourceGuestEntity)
     {
-        guestService.findOneByphone(guestPhone)
-                .ifPresent(guestEntity ->
+        sourceGuestEntity.setPhone(PhoneTools.preparePhone(sourceGuestEntity.getPhone()));
+        //GuestEntity guestEntity;
+        // TODO: 04.10.2018 не работает !!!!!!!!!
+        guestService.findById(sourceGuestEntity.getId())
+                .ifPresent(guestEntity1 ->
                 {
-                    throw new GuestAlreadyExistException(guestEntity.getPhone());
+                    throw new GuestAlreadyExistException(guestEntity1.getPhone());
                 });
-        GuestEntity guestEntity = new GuestEntity(name, guestPhone, enabled);
-        return guestService.save(guestEntity);
-    }
-
-    @Override
-    public GuestEntity setEnableGuest(String guestPhone, Boolean enabled)
-    {
-        GuestEntity guestEntity = guestService.findOneByphone(guestPhone)
-                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
-        guestEntity.setEnabled(enabled);
-        return guestService.save(guestEntity);
-    }
-
-    @Override
-    public GuestEntity allowDoor(String guestPhone, String doorPhone)
-    {
-        DoorEntity checkingDoor = doorEntityRepository.findOneByphone(doorPhone)
-                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
-        GuestEntity guestEntity = guestService.findOneByphone(guestPhone)
-                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
-        Set<DoorEntity> allowedDoors = guestEntity.getAccessedDoors();
-        if (allowedDoors.contains(checkingDoor))
+        try
         {
-            throw new GuestAlreadyHaveThisDoorException(guestPhone, doorPhone);
+            entityManager.getTransaction()
+                    .begin();
+            entityManager.merge(sourceGuestEntity);
+            entityManager.flush();
+            entityManager.getTransaction()
+                    .commit();
         }
-        else
+        catch (RuntimeException e)
         {
-            allowedDoors.add(checkingDoor);
+            entityManager.getTransaction()
+                    .rollback();
         }
-        return guestService.save(guestEntity);
-    }
 
-    @Override
-    public GuestEntity dennyDoor(String guestPhone, String doorPhone)
-    {
-        DoorEntity checkingDoor = doorEntityRepository.findOneByphone(doorPhone)
-                .orElseThrow(() -> new DoorNotFoundException(doorPhone));
-        GuestEntity guestEntity = guestService.findOneByphone(guestPhone)
-                .orElseThrow(() -> new GuestNotFoundException(guestPhone));
-        Set<DoorEntity> allowedDoors = guestEntity.getAccessedDoors();
-
-        allowedDoors.remove(checkingDoor);
-
-        return guestService.save(guestEntity);
+        return sourceGuestEntity;
     }
 
     @Override
     public GuestEntity updateGuest(GuestEntity sourceGuestEntity)
     {
-
-        GuestEntity foundedGuestEntity = guestService.findById(sourceGuestEntity.getId())
-                .orElseThrow(() -> new GuestNotFoundException(sourceGuestEntity.getPhone()));
-
-        foundedGuestEntity.setEnabled(sourceGuestEntity.isEnabled());
-        foundedGuestEntity.setName(sourceGuestEntity.getName());
-        foundedGuestEntity.setPhone(sourceGuestEntity.getPhone());
-        Set<DoorEntity> allowedDoors = new HashSet<>();
-        sourceGuestEntity.getAccessedDoors()
-                .forEach(doorEntity -> allowedDoors.add(doorEntityRepository.findById(doorEntity.getId())
-                        .orElseThrow(() -> new DoorNotFoundException(doorEntity.getPhone()))));
-        foundedGuestEntity.setAccessedDoors(allowedDoors);
-        return guestService.save(foundedGuestEntity);
+        entityManager.getTransaction()
+                .begin();
+        GuestEntity guestEntity = entityManager.merge(sourceGuestEntity);
+        entityManager.flush();
+        entityManager.getTransaction()
+                .commit();
+        return guestEntity;
     }
 
     @Override
