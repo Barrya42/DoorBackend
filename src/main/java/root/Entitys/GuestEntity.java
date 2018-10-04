@@ -64,10 +64,6 @@ public class GuestEntity
         return enabled;
     }
 
-    public void setEnabled(Boolean newEnabled)
-    {
-        enabled = newEnabled;
-    }
 
     public String getName()
     {

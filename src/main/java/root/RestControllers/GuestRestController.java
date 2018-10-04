@@ -109,8 +109,7 @@ public class GuestRestController
 
     private  GuestEntity updateGuest(@RequestBody GuestEntity guestEntity)
     {
-//        return guestService.updateGuest(guestEntity);
-        return null;
+        return guestService.updateGuest(guestEntity);
     }
 }
 

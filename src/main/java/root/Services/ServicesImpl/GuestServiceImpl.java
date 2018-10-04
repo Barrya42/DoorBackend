@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -90,25 +90,21 @@ public class GuestServiceImpl implements GuestService
     }
 
     @Override
-    public GuestEntity updateGuest(Map<String, String> params)
+    public GuestEntity updateGuest(GuestEntity sourceGuestEntity)
     {
-//        GuestEntity foundedGuestEntity = guestService.findById(guestEntity.getId())
-//                .orElseThrow(() -> new GuestNotFoundException(guestEntity.getPhone()));
-//        throw new RuntimeException("Not Implemeted");
 
-        if (params.containsKey("id"))
-        {
-            long id = Long.valueOf(params.get("id"));
-            String guestPhone = params.getOrDefault("guestPhone", "");
-            String guestName = params.getOrDefault("guestName", "");
-            Boolean enabled = Boolean.valueOf(params.getOrDefault("enabled", "false"));
+        GuestEntity foundedGuestEntity = guestService.findById(sourceGuestEntity.getId())
+                .orElseThrow(() -> new GuestNotFoundException(sourceGuestEntity.getPhone()));
 
-
-            GuestEntity guestEntity = guestService.findById(id)
-                    .orElseThrow(() -> new GuestNotFoundException(guestPhone));
-            guestEntity.setEnabled(enabled);
-        }
-        return null;
+        foundedGuestEntity.setEnabled(sourceGuestEntity.isEnabled());
+        foundedGuestEntity.setName(sourceGuestEntity.getName());
+        foundedGuestEntity.setPhone(sourceGuestEntity.getPhone());
+        Set<DoorEntity> allowedDoors = new HashSet<>();
+        sourceGuestEntity.getAccessedDoors()
+                .forEach(doorEntity -> allowedDoors.add(doorEntityRepository.findById(doorEntity.getId())
+                        .orElseThrow(() -> new DoorNotFoundException(doorEntity.getPhone()))));
+        foundedGuestEntity.setAccessedDoors(allowedDoors);
+        return guestService.save(foundedGuestEntity);
     }
 
     @Override

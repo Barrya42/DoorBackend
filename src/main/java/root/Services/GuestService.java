@@ -1,6 +1,5 @@
 package root.Services;
 
-import java.util.Map;
 import java.util.Optional;
 
 import root.Entitys.GuestEntity;
@@ -17,7 +16,7 @@ public interface GuestService
 
     GuestEntity dennyDoor(String guestPhone, String doorPhone);
 
-    GuestEntity updateGuest(Map<String,String> params);
+    GuestEntity updateGuest(GuestEntity params);
 
     Boolean checkDoorForGuest(String guestPhone, String doorPhone);
 }
