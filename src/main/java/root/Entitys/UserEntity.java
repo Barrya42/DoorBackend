@@ -15,11 +15,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 //Сущьность пользователя, который будет непосредственно работать с программой(сотрудник УК или мы или дверь).
 @Entity
 //@Transactional
-@Table(name = "Users")
+@Table(name = "Users",uniqueConstraints =
+@UniqueConstraint(columnNames = {"id", "phone","username"}))
 public class UserEntity
 {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();

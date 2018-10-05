@@ -5,22 +5,29 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import root.Tools.PhoneTools;
 
 //Сущньсть непосредственно двери/шлакбаума/калитки
 @Entity
-@Table(name = "Doors")
+@Table(name = "Doors", uniqueConstraints =
+@UniqueConstraint(columnNames = {"id", "phone"}))
 public class DoorEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String adress;
-    private String mac;
     private String phone;
     private float balance;
     private boolean isOpen;
+    private boolean active;
+
+    public boolean isActive()
+    {
+        return this.active;
+    }
 
     public long getId()
     {
@@ -32,14 +39,14 @@ public class DoorEntity
         return adress;
     }
 
-    public String getMac()
-    {
-        return mac;
-    }
-
     public String getPhone()
     {
         return phone;
+    }
+
+    public void setPhone(String phone)
+    {
+        this.phone = phone;
     }
 
     public float getBalance()
@@ -62,7 +69,7 @@ public class DoorEntity
     {
         DoorEntity other = (DoorEntity) obj;
         if (PhoneTools.preparePhone(phone)
-                .equals(PhoneTools.preparePhone(other.phone)))
+                .equals(PhoneTools.preparePhone(other.phone)) || other.getId() == ((DoorEntity) obj).getId())
         {
             return true;
         }

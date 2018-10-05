@@ -1,7 +1,6 @@
 package root.RestControllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-
-import javax.validation.Valid;
 
 import root.Entitys.GuestEntity;
 import root.Services.DoorService;
@@ -31,7 +28,6 @@ public class GuestRestController
     private DoorService doorService;
 
     @RequestMapping(path = "/getInfo", method = RequestMethod.GET)
-
     private GuestEntity readGuest(@RequestParam Map<String, String> params)
     {
         String phone = PhoneTools.preparePhone(params.get("guestPhone"));
@@ -41,7 +37,6 @@ public class GuestRestController
     }
 
     @RequestMapping(path = "/checkDoor", method = RequestMethod.GET)
-
     private ResponseEntity checkDoor(@RequestParam Map<String, String> params)
     {
         ResponseEntity responseEntity;
@@ -62,17 +57,12 @@ public class GuestRestController
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     private GuestEntity addGuest(@RequestBody GuestEntity newGuestEntity)
     {
-        String guestPhone = PhoneTools.preparePhone(newGuestEntity.getPhone());
-        newGuestEntity.setPhone(guestPhone);
-        guestService.addGuest(newGuestEntity);
         return guestService.addGuest(newGuestEntity);
     }
 
     @RequestMapping(path = "/updateGuest", method = RequestMethod.POST)
-
     private GuestEntity updateGuest(@RequestBody GuestEntity guestEntity)
     {
-        guestEntity.setPhone(PhoneTools.preparePhone(guestEntity.getPhone()));
         return guestService.updateGuest(guestEntity);
     }
 }

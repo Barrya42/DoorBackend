@@ -30,6 +30,7 @@ public class GuestEntity
 
     public void setPhone(String phone)
     {
+        // TODO: 05.10.2018 проверить заходит ли десериализатор сюда
         this.phone = phone;
     }
 
